@@ -24,21 +24,25 @@ public class DefaultAttendanceService {
     ArrivalRepository arrivalRepository;
 
     public String processArrival(String username, String fullName, byte[] photo) {
+        LocalDate today = LocalDate.now();
         LocalDateTime now = LocalDateTime.now();
-        LocalTime deadline = LocalTime.of(11, 0);
+        LocalTime deadlineTime = LocalTime.of(11, 0);
+        LocalDateTime deadline = LocalDateTime.of(today, deadlineTime);
 
         boolean alreadyArrivedToday = arrivalRepository.existsByUsernameAndArrivalTimeBetween(
                 username,
-                LocalDate.now().atStartOfDay(),
-                LocalDate.now().atTime(23, 59, 59)
+                today.atStartOfDay(),
+                today.atTime(23, 59, 59)
         );
 
         if (alreadyArrivedToday) {
             return "Ты уже зарегистрировал приход сегодня.";
         }
 
-        int lateMinutes = now.toLocalTime().isAfter(deadline) ? (int) Duration.between(LocalDateTime.of(LocalDate.now(), deadline), now).toMinutes()
+        int lateMinutes = now.isAfter(deadline)
+                ? (int) Duration.between(deadline, now).toMinutes()
                 : 0;
+
         Arrival arrival = new Arrival();
         arrival.setUsername(username);
         arrival.setArrivalTime(now);
@@ -78,8 +82,8 @@ public class DefaultAttendanceService {
             employeeRepository.save(emp);
             return String.format("Ты выбыл из гонки за бонус. Опоздание %d мин. Штраф %d сом.", lateMinutes, fine);
         }
-
     }
+
 
 
     public List<Employee> getAllEmployees() {
