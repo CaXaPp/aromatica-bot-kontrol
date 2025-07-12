@@ -25,7 +25,7 @@ public class LatecomerBot extends TelegramLongPollingBot {
 
             if (text != null) {
                 switch (text) {
-                    case "/arrival@aromatica_control_bot":
+                    case "/arrival":
                         sendMessage(chatId, "Отправь фото вместе с этой командой.");
                         break;
                         case "/отчет":
