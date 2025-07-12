@@ -26,7 +26,6 @@ public class DefaultAttendanceService {
     public String processArrival(String username, String fullName, byte[] photo) {
         LocalDateTime now = LocalDateTime.now();
         LocalTime deadline = LocalTime.of(11, 0);
-        LocalDateTime targetTime = LocalDateTime.of(LocalDate.now(), deadline);
 
         boolean alreadyArrivedToday = arrivalRepository.existsByUsernameAndArrivalTimeBetween(
                 username,
@@ -38,8 +37,8 @@ public class DefaultAttendanceService {
             return "Ты уже зарегистрировал приход сегодня.";
         }
 
-        int lateMinutes = now.toLocalTime().isAfter(deadline)
-                ? (int) Duration.between(LocalDateTime.of(LocalDate.now(), deadline), now).toMinutes() : 0;
+        int lateMinutes = now.toLocalTime().isAfter(deadline) ? (int) Duration.between(LocalDateTime.of(LocalDate.now(), deadline), now).toMinutes()
+                : 0;
         Arrival arrival = new Arrival();
         arrival.setUsername(username);
         arrival.setArrivalTime(now);
