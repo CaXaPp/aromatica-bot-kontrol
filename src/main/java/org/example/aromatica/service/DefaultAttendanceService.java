@@ -38,9 +38,8 @@ public class DefaultAttendanceService {
             return "Ты уже зарегистрировал приход сегодня.";
         }
 
-        int lateMinutes = (int) Duration.between(targetTime, now).toMinutes();
-        lateMinutes = Math.max(0, lateMinutes);
-
+        int lateMinutes = now.toLocalTime().isAfter(deadline)
+                ? (int) Duration.between(LocalDateTime.of(LocalDate.now(), deadline), now).toMinutes() : 0;
         Arrival arrival = new Arrival();
         arrival.setUsername(username);
         arrival.setArrivalTime(now);
