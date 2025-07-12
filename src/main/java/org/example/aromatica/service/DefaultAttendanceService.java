@@ -9,23 +9,32 @@ import org.example.aromatica.repository.ArrivalRepository;
 import org.example.aromatica.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.List;
+import java.util.TimeZone;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DefaultAttendanceService {
+
     EmployeeRepository employeeRepository;
     ArrivalRepository arrivalRepository;
 
+    static final ZoneId BISHKEK_ZONE = ZoneId.of("Asia/Bishkek");
+
+    @PostConstruct
+    public void init() {
+        TimeZone.setDefault(TimeZone.getTimeZone(BISHKEK_ZONE));
+    }
+
     public String processArrival(String username, String fullName, byte[] photo) {
-        LocalDate today = LocalDate.now();
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime nowZoned = ZonedDateTime.now(BISHKEK_ZONE);
+        LocalDate today = nowZoned.toLocalDate();
+        LocalDateTime now = nowZoned.toLocalDateTime();
+
         LocalTime deadlineTime = LocalTime.of(11, 0);
         LocalDateTime deadline = LocalDateTime.of(today, deadlineTime);
 
@@ -84,8 +93,6 @@ public class DefaultAttendanceService {
         }
     }
 
-
-
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
@@ -104,6 +111,3 @@ public class DefaultAttendanceService {
         return arrivalRepository.findAllByUsernameOrderByArrivalTimeAsc(username);
     }
 }
-
-
-
